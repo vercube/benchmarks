@@ -16,6 +16,7 @@ import type {
   AutocannonOutput,
   ResourceSample,
   FrameworkResults,
+  MachineSpecs,
 } from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -65,6 +66,40 @@ function percentile(arr: number[], p: number): number {
   const sorted = [...arr].sort((a, b) => a - b);
   const index = Math.ceil((p / 100) * sorted.length) - 1;
   return sorted[Math.max(0, index)];
+}
+
+async function getMachineSpecs(): Promise<MachineSpecs> {
+  const os = await import('node:os');
+  const platform = os.platform();
+  const cpus = os.cpus();
+  const totalMemGB = Math.round(os.totalmem() / (1024 * 1024 * 1024));
+  
+  let osName = 'Unknown';
+  if (platform === 'darwin') {
+    try {
+      const result = await $`sw_vers -productName`.quiet();
+      const version = await $`sw_vers -productVersion`.quiet();
+      osName = `${result.text().trim()} ${version.text().trim()}`;
+    } catch {
+      osName = `macOS ${os.release()}`;
+    }
+  } else if (platform === 'linux') {
+    try {
+      const result = await $`cat /etc/os-release | grep PRETTY_NAME | cut -d'"' -f2`.quiet();
+      osName = result.text().trim() || `Linux ${os.release()}`;
+    } catch {
+      osName = `Linux ${os.release()}`;
+    }
+  } else if (platform === 'win32') {
+    osName = `Windows ${os.release()}`;
+  }
+
+  return {
+    os: osName,
+    cpu: cpus[0]?.model || 'Unknown CPU',
+    cores: cpus.length,
+    memory: `${totalMemGB}GB`,
+  };
 }
 
 function calcPercentBetter(winner: number, other: number, higherIsBetter = false): number {
@@ -248,6 +283,9 @@ async function runLoadTests(): Promise<void> {
 async function generateReport(): Promise<void> {
   header('Phase 4: Generating Report');
 
+  const machineSpecs = await getMachineSpecs();
+  log(`Machine: ${machineSpecs.cpu} (${machineSpecs.cores} cores), ${machineSpecs.memory} RAM`, 'cyan');
+  
   const results: Record<string, FrameworkResults> = {};
 
   // Initialize results
@@ -346,12 +384,16 @@ async function generateReport(): Promise<void> {
     }
   }
 
-  // Save results JSON
-  writeFileSync('results/latest.json', JSON.stringify(results, null, 2));
+  // Save results JSON with machine specs
+  const outputData = {
+    machineSpecs,
+    results,
+  };
+  writeFileSync('results/latest.json', JSON.stringify(outputData, null, 2));
   log('✓ Generated results/latest.json', 'green');
 
   // Generate and save summary markdown
-  const markdown = generateResultsMarkdown(results);
+  const markdown = generateResultsMarkdown(results, machineSpecs);
   writeFileSync('results/summary.md', markdown);
   log('✓ Generated results/summary.md', 'green');
 }
@@ -360,7 +402,7 @@ async function generateReport(): Promise<void> {
 // Shared: Generate Results Markdown
 // ═══════════════════════════════════════════════════════════════════════════
 
-function generateResultsMarkdown(results: Record<string, FrameworkResults>): string {
+function generateResultsMarkdown(results: Record<string, FrameworkResults>, machineSpecs?: MachineSpecs): string {
   let md = '### Results Summary\n\n';
   md += `> Last updated: ${new Date().toLocaleString('en-US', {
     dateStyle: 'full',
@@ -473,7 +515,13 @@ function generateResultsMarkdown(results: Record<string, FrameworkResults>): str
 
   md += '---\n\n';
   md += '📊 [View raw data](results/latest.json)\n\n';
-  md += `**Test environment:** Ubuntu 22.04, Node.js ${config.nodeVersion}, ${config.loadTest.connections} concurrent connections, ${config.loadTest.duration}s duration\n`;
+  
+  if (machineSpecs) {
+    md += `**Test environment:** ${machineSpecs.os}, ${machineSpecs.cpu} (${machineSpecs.cores} cores), ${machineSpecs.memory} RAM, Node.js ${config.nodeVersion}\n\n`;
+    md += `**Load test config:** ${config.loadTest.connections} concurrent connections, ${config.loadTest.duration}s duration, ${config.loadTest.pipelining} pipelining\n`;
+  } else {
+    md += `**Test environment:** Node.js ${config.nodeVersion}, ${config.loadTest.connections} concurrent connections, ${config.loadTest.duration}s duration\n`;
+  }
 
   return md;
 }
@@ -489,7 +537,12 @@ async function updateReadme(): Promise<void> {
     return;
   }
 
-  const results: Record<string, FrameworkResults> = JSON.parse(readFileSync(resultsPath, 'utf8'));
+  const data = JSON.parse(readFileSync(resultsPath, 'utf8'));
+  
+  // Handle both old format (direct results) and new format (with machineSpecs)
+  const results: Record<string, FrameworkResults> = data.results || data;
+  const machineSpecs: MachineSpecs | undefined = data.machineSpecs;
+  
   let readme = readFileSync('README.md', 'utf8');
 
   const startMarker = '<!-- BENCHMARK_RESULTS_START -->';
@@ -503,7 +556,7 @@ async function updateReadme(): Promise<void> {
   }
 
   // Use the same markdown generator as summary.md
-  const section = generateResultsMarkdown(results);
+  const section = generateResultsMarkdown(results, machineSpecs);
   const before = readme.substring(0, startIndex + startMarker.length);
   const after = readme.substring(endIndex);
 
@@ -527,7 +580,7 @@ async function main() {
 
   console.log();
   log('╔════════════════════════════════════════╗', 'blue');
-  log('║   Vercube Benchmark Suite v3.0         ║', 'blue');
+  log('║   Vercube Benchmark Suite              ║', 'blue');
   log('║   Powered by Bun 🚀                    ║', 'blue');
   log('╚════════════════════════════════════════╝', 'blue');
 

@@ -97,3 +97,15 @@ export interface FrameworkResults {
   resources: ResourceMetrics | null;
 }
 
+export interface MachineSpecs {
+  os: string;
+  cpu: string;
+  cores: number;
+  memory: string;
+}
+
+export interface BenchmarkOutput {
+  machineSpecs: MachineSpecs;
+  results: Record<string, FrameworkResults>;
+}
+
