@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Results (keep structure, ignore raw data)
+results/raw/*
+!results/raw/.gitkeep
+
+# Keep these for GitHub Pages
+!results/report.html
+!results/summary.md
+!results/latest.json
+
+# Environment
+.env
+.env.local
+
+# Temporary files
+*.tmp
+.cache/

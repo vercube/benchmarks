@@ -1,0 +1,43 @@
+services:
+  # Run benchmarks in isolated environment
+  benchmark:
+    build: .
+    container_name: framework-benchmark
+    volumes:
+      - ./results:/benchmark/results
+    # Resource limits for consistent testing
+    cpus: 2
+    mem_limit: 2g
+    environment:
+      - NODE_ENV=production
+    
+  # Individual framework services (for manual testing)
+  vercube:
+    build:
+      context: .
+      dockerfile: apps/vercube/Dockerfile
+    container_name: vercube-test
+    ports:
+      - "3001:3000"
+    cpus: 2
+    mem_limit: 512m
+    
+  nestjs:
+    build:
+      context: .
+      dockerfile: apps/nestjs/Dockerfile
+    container_name: nestjs-test
+    ports:
+      - "3002:3000"
+    cpus: 2
+    mem_limit: 512m
+    
+  routing-controllers:
+    build:
+      context: .
+      dockerfile: apps/routing-controllers/Dockerfile
+    container_name: routing-controllers-test
+    ports:
+      - "3003:3000"
+    cpus: 2
+    mem_limit: 512m

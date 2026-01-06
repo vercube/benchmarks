@@ -1,0 +1,27 @@
+{
+  "name": "@vercube/benchmarks",
+  "version": "1.0.0",
+  "description": "Performance benchmarks comparing Vercube against other Node.js frameworks",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "benchmark:setup": "bun run scripts/setup.ts",
+    "benchmark": "bun run scripts/benchmark.ts",
+    "readme:update": "bun run scripts/benchmark.ts --update-readme-only"
+  },
+  "keywords": [
+    "benchmark",
+    "performance",
+    "nodejs",
+    "http",
+    "framework"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/pidusage": "2.0.5",
+    "bun": "1.3.5",
+    "pidusage": "4.0.1"
+  }
+}

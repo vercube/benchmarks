@@ -1,0 +1,12 @@
+packages:
+  - apps/*
+
+catalog:
+  '@types/node': '24'
+  typescript: 5.9.3
+  reflect-metadata: 0.2.2
+
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - bun
+  - esbuild

@@ -1,0 +1,16 @@
+{
+  "name": "benchmark-vercube",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "vercube build",
+    "start": "node dist/index.mjs",
+    "dev": "vercube dev"
+  },
+  "dependencies": {
+    "@vercube/core": "latest"
+  },
+  "devDependencies": {
+    "@vercube/cli": "latest"
+  }
+}
