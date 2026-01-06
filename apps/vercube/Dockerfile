@@ -1,25 +1,19 @@
-FROM node:20-slim
+FROM node:22-slim
 
-# Install pnpm
-RUN npm install -g pnpm@8
+RUN npm install -g pnpm@10
 
 WORKDIR /app
 
-# Copy package files
 COPY apps/vercube/package.json ./
 COPY apps/vercube/tsconfig.json ./
+COPY apps/vercube/vercube.config.ts ./
 
-# Install dependencies
 RUN pnpm install
 
-# Copy source
 COPY apps/vercube/src ./src
 
-# Build
 RUN pnpm build
 
-# Expose port
 EXPOSE 3000
 
-# Start server
 CMD ["pnpm", "start"]
