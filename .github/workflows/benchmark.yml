@@ -73,8 +73,8 @@ jobs:
       
       - name: Commit updated README
         run: |
-          git config --local user.email "${{ vars.BOT_EMAIL }}"
-          git config --local user.name "${{ vars.BOT_NAME }}"
+          git config --local user.email "${{ secrets.BOT_EMAIL }}"
+          git config --local user.name "${{ secrets.BOT_NAME }}"
           git add README.md results/
           git diff --staged --quiet || git commit -m "docs: update benchmark results [skip ci]"
       
