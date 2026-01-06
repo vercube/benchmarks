@@ -136,16 +136,6 @@ docker-compose up benchmark
 Benefits: Same Node.js version, enforced resource limits (2 CPUs, 2GB RAM), reproducible across machines.
 
 
-## 📈 CI/CD
-
-Benchmarks run automatically on:
-- Every push to `main`
-- Every pull request
-- Weekly (Mondays at 2 AM UTC)
-
-Results are auto-published to this README.
-
-
 ## 🤝 Contributing
 
 Want to add Hono, Fastify, Elysia, or improve the benchmarks? See **[CONTRIBUTING.md](CONTRIBUTING.md)** for detailed instructions.
