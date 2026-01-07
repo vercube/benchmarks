@@ -26,7 +26,7 @@ WORKDIR /benchmark
 
 # Copy package files first for better caching
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY benchmark-config.json ./
+COPY benchmark-config.json README.md ./
 
 # Copy apps
 COPY apps ./apps
