@@ -8,5 +8,6 @@ catalog:
 
 onlyBuiltDependencies:
   - '@nestjs/core'
+  - '@swc/core'
   - bun
   - esbuild

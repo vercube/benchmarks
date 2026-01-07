@@ -2,7 +2,8 @@
   "frameworks": [
     "vercube",
     "nestjs",
-    "routing-controllers" 
+    "routing-controllers",
+    "tsed"
   ],
   "nodeVersion": "22",
   "testEndpoint": "/api/test",

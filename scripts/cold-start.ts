@@ -6,6 +6,7 @@
  * Called by hyperfine to measure cold start time for a single framework.
  * Usage: bun run scripts/cold-start.ts <framework>
  */
+import { file, spawn } from 'bun';
 
 const framework = process.argv[2];
 
@@ -15,21 +16,21 @@ if (!framework) {
 }
 
 const appDir = `apps/${framework}`;
-const config = await Bun.file('benchmark-config.json').json();
+const config = await file('benchmark-config.json').json();
 const { port, healthEndpoint } = config;
 
 // Start time
 const startTime = performance.now();
 
 // Start the server
-const server = Bun.spawn(['pnpm', 'start'], {
+const server = spawn(['pnpm', 'start'], {
   cwd: appDir,
   stdout: 'ignore',
   stderr: 'ignore',
 });
 
 // Wait for health check to respond
-const maxAttempts = 100;
+const maxAttempts = 1000;
 let attempt = 0;
 
 while (attempt < maxAttempts) {

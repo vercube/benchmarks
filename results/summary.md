@@ -1,6 +1,6 @@
 ### Results Summary
 
-> Last updated: Wednesday, January 7, 2026 at 7:08 AM UTC
+> Last updated: Wednesday, January 7, 2026 at 9:18 AM UTC
 
 > Statistical comparison powered by [hyperfine](https://github.com/sharkdp/hyperfine)
 
@@ -8,33 +8,37 @@
 
 | Framework | Mean | Median | Min | Max | Relative |
 |-----------|------|--------|-----|-----|:--------:|
-| **vercube** 🏆 | 0.68s | 0.67s | 0.56s | 0.93s | 1.00× |
-| **routing-controllers** | 0.86s | 0.86s | 0.74s | 1.02s | 1.00× |
-| **nestjs** | 1.78s | 1.78s | 1.74s | 1.82s | 1.00× |
+| **vercube** 🏆 | 0.55s | 0.55s | 0.55s | 0.56s | 1.00× |
+| **routing-controllers** | 0.77s | 0.77s | 0.76s | 0.79s | 1.00× |
+| **tsed** | 0.95s | 0.95s | 0.93s | 0.99s | 1.00× |
+| **nestjs** | 1.83s | 1.83s | 1.80s | 1.88s | 1.00× |
 
 #### 🚀 Cold Start Time
 
 | Framework | Mean | Median | Min | Max | Relative |
 |-----------|------|--------|-----|-----|:--------:|
-| **vercube** 🏆 | 597ms | 597ms | 540ms | 649ms | 1.00× |
-| **routing-controllers** | 695ms | 655ms | 613ms | 1162ms | 1.00× |
-| **nestjs** | 729ms | 718ms | 694ms | 876ms | 1.00× |
+| **vercube** 🏆 | 569ms | 552ms | 521ms | 855ms | 1.00× |
+| **routing-controllers** | 637ms | 636ms | 609ms | 671ms | 1.00× |
+| **nestjs** | 775ms | 710ms | 670ms | 1070ms | 1.00× |
+| **tsed** | 1355ms | 1293ms | 1231ms | 1941ms | 1.00× |
 
 #### 🔥 Load Test Performance
 
 | Framework | Requests/sec | Latency p50 | Latency p95 | Latency p99 | vs Best RPS | vs Best p95 |
 |-----------|--------------|-------------|-------------|-------------|:-----------:|:-----------:|
-| **vercube** 🏆 | 42693 | 17.00ms | 35.00ms | 35.00ms | — | — |
-| **nestjs** | 39169 | 19.00ms | 40.00ms | 41.00ms | -9% | +14% |
-| **routing-controllers** | 36593 | 20.00ms | 44.00ms | 45.00ms | -17% | +26% |
+| **vercube** 🏆 | 42337 | 17.00ms | 35.00ms | 35.00ms | — | — |
+| **nestjs** | 38044 | 20.00ms | 41.00ms | 42.00ms | -11% | +17% |
+| **routing-controllers** | 36770 | 21.00ms | 42.00ms | 43.00ms | -15% | +20% |
+| **tsed** | 20305 | 43.00ms | 88.00ms | 90.00ms | -109% | +151% |
 
 #### 💾 Resource Usage
 
 | Framework | CPU Mean | CPU p95 | Memory Mean | Memory p95 | vs Best CPU | vs Best Mem |
 |-----------|----------|---------|-------------|------------|:-----------:|:-----------:|
-| **vercube** | 0.1% | 0.0% | 129.7MB | 129.7MB | +80% | +7% |
-| **nestjs** 🏆 | 0.0% | 0.0% | 121.7MB | 129.7MB | — | — |
-| **routing-controllers** | 0.1% | 0.0% | 127.6MB | 130.0MB | +100% | +5% |
+| **vercube** | 0.1% | 0.0% | 129.6MB | 129.6MB | +57% | +3% |
+| **nestjs** | 0.1% | 0.0% | 129.7MB | 129.7MB | +83% | +3% |
+| **routing-controllers** 🏆 | 0.0% | 0.0% | 129.8MB | 129.8MB | — | +3% |
+| **tsed** 🏆 | 0.0% | 0.0% | 125.8MB | 130.1MB | +0% | — |
 
 ---
 
