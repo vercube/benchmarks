@@ -41,3 +41,13 @@ services:
       - "3003:3000"
     cpus: 2
     mem_limit: 512m
+  
+  tsed:
+    build:
+      context: .
+      dockerfile: apps/tsed/Dockerfile
+    container_name: tsed-test
+    ports:
+      - "3004:3000"
+    cpus: 2
+    mem_limit: 512m

@@ -26,6 +26,7 @@ All frameworks are tested with identical endpoints and configuration for fair co
 - **🚀 Vercube** ([vercube.dev](https://vercube.dev)) - Modern, fast, TypeScript-first framework
 - **NestJS** ([nestjs.com](https://nestjs.com)) - Progressive Node.js framework
 - **Routing Controllers** ([github.com/typestack/routing-controllers](https://github.com/typestack/routing-controllers)) - Decorator-based routing
+- **Ts.ED** ([https://tsed.dev](https://tsed.dev/)) - A modern framework written in TypeScript
 
 
 ## 📊 Current Benchmarks
