@@ -336,6 +336,32 @@ async function generateReport(): Promise<void> {
     }
   }
 
+  // Calculate relative values for build benchmark (hyperfine doesn't always provide them)
+  const buildMeans = config.frameworks
+    .filter(fw => results[fw]?.build)
+    .map(fw => results[fw].build!.mean);
+  if (buildMeans.length > 0) {
+    const minBuildMean = Math.min(...buildMeans);
+    for (const fw of config.frameworks) {
+      if (results[fw]?.build) {
+        results[fw].build!.relative = results[fw].build!.mean / minBuildMean;
+      }
+    }
+  }
+
+  // Calculate relative values for cold start benchmark
+  const coldStartMeans = config.frameworks
+    .filter(fw => results[fw]?.coldStart)
+    .map(fw => results[fw].coldStart!.mean);
+  if (coldStartMeans.length > 0) {
+    const minColdStartMean = Math.min(...coldStartMeans);
+    for (const fw of config.frameworks) {
+      if (results[fw]?.coldStart) {
+        results[fw].coldStart!.relative = results[fw].coldStart!.mean / minColdStartMean;
+      }
+    }
+  }
+
   // Read per-framework results
   for (const framework of config.frameworks) {
     // Load test
@@ -413,35 +439,39 @@ function generateResultsMarkdown(results: Record<string, FrameworkResults>, mach
 
   // Build time
   md += '#### ⚡ Build Time\n\n';
-  md += '| Framework | Mean | Median | Min | Max | Relative |\n';
-  md += '|-----------|------|--------|-----|-----|:--------:|\n';
+  md += '| Framework | Mean | Median | Min | Max | vs Best |\n';
+  md += '|-----------|------|--------|-----|-----|:-------:|\n';
 
   const buildSorted = config.frameworks
     .filter(fw => results[fw]?.build)
     .sort((a, b) => results[a].build!.mean - results[b].build!.mean);
 
+  const bestBuildMean = buildSorted.length > 0 ? results[buildSorted[0]].build!.mean : 0;
+
   for (const [index, fw] of buildSorted.entries()) {
     const b = results[fw].build!;
     const trophy = index === 0 ? ' 🏆' : '';
-    const relative = b.relative === 1.0 ? '1.00×' : `${b.relative.toFixed(2)}× slower`;
-    md += `| **${fw}**${trophy} | ${b.mean.toFixed(2)}s | ${b.median.toFixed(2)}s | ${b.min.toFixed(2)}s | ${b.max.toFixed(2)}s | ${relative} |\n`;
+    const vsBest = index === 0 ? '—' : `+${((b.mean - bestBuildMean) / bestBuildMean * 100).toFixed(0)}%`;
+    md += `| **${fw}**${trophy} | ${b.mean.toFixed(2)}s | ${b.median.toFixed(2)}s | ${b.min.toFixed(2)}s | ${b.max.toFixed(2)}s | ${vsBest} |\n`;
   }
   md += '\n';
 
   // Cold start
   md += '#### 🚀 Cold Start Time\n\n';
-  md += '| Framework | Mean | Median | Min | Max | Relative |\n';
-  md += '|-----------|------|--------|-----|-----|:--------:|\n';
+  md += '| Framework | Mean | Median | Min | Max | vs Best |\n';
+  md += '|-----------|------|--------|-----|-----|:-------:|\n';
 
   const coldStartSorted = config.frameworks
     .filter(fw => results[fw]?.coldStart)
     .sort((a, b) => results[a].coldStart!.mean - results[b].coldStart!.mean);
 
+  const bestColdStartMean = coldStartSorted.length > 0 ? results[coldStartSorted[0]].coldStart!.mean : 0;
+
   for (const [index, fw] of coldStartSorted.entries()) {
     const c = results[fw].coldStart!;
     const trophy = index === 0 ? ' 🏆' : '';
-    const relative = c.relative === 1.0 ? '1.00×' : `${c.relative.toFixed(2)}× slower`;
-    md += `| **${fw}**${trophy} | ${(c.mean * 1000).toFixed(0)}ms | ${(c.median * 1000).toFixed(0)}ms | ${(c.min * 1000).toFixed(0)}ms | ${(c.max * 1000).toFixed(0)}ms | ${relative} |\n`;
+    const vsBest = index === 0 ? '—' : `+${((c.mean - bestColdStartMean) / bestColdStartMean * 100).toFixed(0)}%`;
+    md += `| **${fw}**${trophy} | ${(c.mean * 1000).toFixed(0)}ms | ${(c.median * 1000).toFixed(0)}ms | ${(c.min * 1000).toFixed(0)}ms | ${(c.max * 1000).toFixed(0)}ms | ${vsBest} |\n`;
   }
   md += '\n';
 
@@ -462,8 +492,11 @@ function generateResultsMarkdown(results: Record<string, FrameworkResults>, mach
   md += '| Framework | Requests/sec | Latency p50 | Latency p95 | Latency p99 | vs Best RPS | vs Best p95 |\n';
   md += '|-----------|--------------|-------------|-------------|-------------|:-----------:|:-----------:|\n';
 
-  for (const fw of config.frameworks) {
-    if (!results[fw]?.loadTest) continue;
+  const loadTestSorted = config.frameworks
+    .filter(fw => results[fw]?.loadTest)
+    .sort((a, b) => results[b].loadTest!.requests.mean - results[a].loadTest!.requests.mean);
+
+  for (const fw of loadTestSorted) {
     const l = results[fw].loadTest!;
     const isRPSWinner = fw === highestRPS;
     const isLatencyWinner = fw === lowestLatency;
