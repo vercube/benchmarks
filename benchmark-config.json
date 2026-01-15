@@ -3,7 +3,8 @@
     "vercube",
     "nestjs",
     "routing-controllers",
-    "tsed"
+    "tsed",
+    "rikta"
   ],
   "nodeVersion": "22",
   "testEndpoint": "/api/test",

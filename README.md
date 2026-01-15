@@ -27,6 +27,7 @@ All frameworks are tested with identical endpoints and configuration for fair co
 - **NestJS** ([nestjs.com](https://nestjs.com)) - Progressive Node.js framework
 - **Routing Controllers** ([github.com/typestack/routing-controllers](https://github.com/typestack/routing-controllers)) - Decorator-based routing
 - **Ts.ED** ([https://tsed.dev](https://tsed.dev/)) - A modern framework written in TypeScript
+- **Rikta** ([https://rikta.dev/](https://rikta.dev/)) - The Zero-Config TypeScript Framework
 
 
 ## 📊 Current Benchmarks
@@ -34,7 +35,7 @@ All frameworks are tested with identical endpoints and configuration for fair co
 <!-- BENCHMARK_RESULTS_START -->
 ### Results Summary
 
-> Last updated: Wednesday, January 7, 2026 at 9:18 AM UTC
+> Last updated: Thursday, January 15, 2026 at 11:03 PM UTC
 
 > Statistical comparison powered by [hyperfine](https://github.com/sharkdp/hyperfine)
 
@@ -42,28 +43,31 @@ All frameworks are tested with identical endpoints and configuration for fair co
 
 | Framework | Mean | Median | Min | Max | Relative |
 |-----------|------|--------|-----|-----|:--------:|
-| **vercube** 🏆 | 0.55s | 0.55s | 0.55s | 0.56s | 1.00× |
-| **routing-controllers** | 0.77s | 0.77s | 0.76s | 0.79s | 1.00× |
-| **tsed** | 0.95s | 0.95s | 0.93s | 0.99s | 1.00× |
-| **nestjs** | 1.83s | 1.83s | 1.80s | 1.88s | 1.00× |
+| **vercube** 🏆 | 0.58s | 0.58s | 0.56s | 0.59s | 1.00× |
+| **routing-controllers** | 0.77s | 0.77s | 0.76s | 0.78s | 1.00× |
+| **tsed** | 0.97s | 0.96s | 0.95s | 1.02s | 1.00× |
+| **rikta** | 1.56s | 1.55s | 1.50s | 1.65s | 1.00× |
+| **nestjs** | 1.84s | 1.84s | 1.81s | 1.88s | 1.00× |
 
 #### 🚀 Cold Start Time
 
 | Framework | Mean | Median | Min | Max | Relative |
 |-----------|------|--------|-----|-----|:--------:|
-| **vercube** 🏆 | 569ms | 552ms | 521ms | 855ms | 1.00× |
-| **routing-controllers** | 637ms | 636ms | 609ms | 671ms | 1.00× |
-| **nestjs** | 775ms | 710ms | 670ms | 1070ms | 1.00× |
-| **tsed** | 1355ms | 1293ms | 1231ms | 1941ms | 1.00× |
+| **vercube** 🏆 | 554ms | 554ms | 525ms | 572ms | 1.00× |
+| **rikta** | 633ms | 636ms | 578ms | 676ms | 1.00× |
+| **routing-controllers** | 678ms | 677ms | 638ms | 718ms | 1.00× |
+| **nestjs** | 734ms | 728ms | 684ms | 785ms | 1.00× |
+| **tsed** | 1334ms | 1328ms | 1283ms | 1408ms | 1.00× |
 
 #### 🔥 Load Test Performance
 
 | Framework | Requests/sec | Latency p50 | Latency p95 | Latency p99 | vs Best RPS | vs Best p95 |
 |-----------|--------------|-------------|-------------|-------------|:-----------:|:-----------:|
-| **vercube** 🏆 | 42337 | 17.00ms | 35.00ms | 35.00ms | — | — |
-| **nestjs** | 38044 | 20.00ms | 41.00ms | 42.00ms | -11% | +17% |
-| **routing-controllers** | 36770 | 21.00ms | 42.00ms | 43.00ms | -15% | +20% |
-| **tsed** | 20305 | 43.00ms | 88.00ms | 90.00ms | -109% | +151% |
+| **vercube** 🏆 | 42446 | 17.00ms | 35.00ms | 36.00ms | — | — |
+| **nestjs** | 38820 | 20.00ms | 41.00ms | 41.00ms | -9% | +17% |
+| **routing-controllers** | 36840 | 21.00ms | 43.00ms | 43.00ms | -15% | +23% |
+| **tsed** | 19364 | 45.00ms | 91.00ms | 101.00ms | -119% | +160% |
+| **rikta** | 38009 | 20.00ms | 45.00ms | 47.00ms | -12% | +29% |
 
 ---
 
@@ -162,4 +166,4 @@ MIT
 
 ## 🙏 Credits
 
-Benchmarking tools: hyperfine, autocannon • Frameworks: Vercube, NestJS, Routing Controllers
+Benchmarking tools: hyperfine, autocannon • Frameworks: Vercube, NestJS, Routing Controllers, Ts.ED, Rikta

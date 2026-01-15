@@ -479,40 +479,6 @@ function generateResultsMarkdown(results: Record<string, FrameworkResults>, mach
   }
   md += '\n';
 
-  // Resources - find winners
-  const mostEfficientCPU = config.frameworks.reduce((best, fw) => {
-    if (!results[fw]?.resources) return best;
-    if (!best || results[fw].resources!.cpu.mean < results[best].resources!.cpu.mean) return fw;
-    return best;
-  }, null as string | null);
-
-  const mostEfficientMemory = config.frameworks.reduce((best, fw) => {
-    if (!results[fw]?.resources) return best;
-    if (!best || results[fw].resources!.memory.mean < results[best].resources!.memory.mean) return fw;
-    return best;
-  }, null as string | null);
-
-  md += '#### 💾 Resource Usage\n\n';
-  md += '| Framework | CPU Mean | CPU p95 | Memory Mean | Memory p95 | vs Best CPU | vs Best Mem |\n';
-  md += '|-----------|----------|---------|-------------|------------|:-----------:|:-----------:|\n';
-
-  for (const fw of config.frameworks) {
-    if (!results[fw]?.resources) continue;
-    const r = results[fw].resources!;
-    const isCPUWinner = fw === mostEfficientCPU;
-    const isMemWinner = fw === mostEfficientMemory;
-    const trophy = isCPUWinner || isMemWinner ? ' 🏆' : '';
-
-    const bestCPU = results[mostEfficientCPU!]?.resources?.cpu.mean || 0;
-    const bestMem = results[mostEfficientMemory!]?.resources?.memory.mean || 0;
-
-    const cpuDiff = isCPUWinner ? '—' : `+${calcPercentBetter(bestCPU, r.cpu.mean).toFixed(0)}%`;
-    const memDiff = isMemWinner ? '—' : `+${calcPercentBetter(bestMem, r.memory.mean).toFixed(0)}%`;
-
-    md += `| **${fw}**${trophy} | ${r.cpu.mean.toFixed(1)}% | ${r.cpu.p95.toFixed(1)}% | ${r.memory.mean.toFixed(1)}MB | ${r.memory.p95.toFixed(1)}MB | ${cpuDiff} | ${memDiff} |\n`;
-  }
-  md += '\n';
-
   md += '---\n\n';
   md += '📊 [View raw data](results/latest.json)\n\n';
   
