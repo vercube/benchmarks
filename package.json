@@ -17,7 +17,7 @@
     "@nestjs/platform-express": "^11.1.28",
     "@oakserver/oak": "^14.1.0",
     "effect": "4.0.0-beta.102",
-    "elysia": "2.0.0-exp.60",
+    "elysia": "2.0.0-beta.3",
     "express": "^5.2.1",
     "fastify": "^5.10.0",
     "h3": "^2.0.1-rc.26",
