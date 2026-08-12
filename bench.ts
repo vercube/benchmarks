@@ -299,7 +299,7 @@ export const waitForStartup = async (startedAt: number) => {
 			return { response, startupMs: performance.now() - startedAt }
 		} catch (error) {
 			lastError = error
-			await sleep(0.05)
+			await sleep(0.001)
 		}
 	}
 
