@@ -2,6 +2,7 @@ import {
 	buildFramework,
 	discoverFrameworks,
 	ensurePortFree,
+	parseFrameworks,
 	startServer,
 	validateServer,
 	waitForStartup
@@ -25,7 +26,9 @@ const verifyExtraRoutes = async () => {
 
 await ensurePortFree()
 
-const frameworks = discoverFrameworks()
+const discovered = discoverFrameworks()
+const requested = parseFrameworks(Bun.argv.slice(2), discovered)
+const frameworks = requested.length ? requested : discovered
 const failures: string[] = []
 let stopCurrent: (() => Promise<void>) | undefined
 

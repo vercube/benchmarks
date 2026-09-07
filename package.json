@@ -1,9 +1,11 @@
 {
-  "name": "bun-http-framework-benchmark",
+  "name": "vercube-http-framework-benchmark",
+  "private": true,
   "scripts": {
-    "build:elysia-aot": "bun scripts/build-framework.ts bun/elysia-aot",
     "benchmark": "bun bench.ts",
+    "build:elysia-aot": "bun scripts/build-framework.ts bun/elysia-aot",
     "kill-port": "kill-port 3000",
+    "link:vercube": "bun scripts/link-vercube.ts",
     "verify": "bun scripts/verify-frameworks.ts"
   },
   "dependencies": {
@@ -16,6 +18,16 @@
     "@nestjs/core": "^11.1.28",
     "@nestjs/platform-express": "^11.1.28",
     "@oakserver/oak": "^14.1.0",
+    "@riktajs/core": "^0.12.0",
+    "@tsed/di": "^8.38.4",
+    "@tsed/platform-express": "^8.38.4",
+    "@tsed/platform-http": "^8.38.4",
+    "@tsed/platform-middlewares": "^8.38.4",
+    "@tsed/platform-params": "^8.38.4",
+    "@tsed/schema": "^8.38.4",
+    "@vercube/core": "^1.2.1",
+    "@vercube/di": "^1.2.1",
+    "@vercube/logger": "^1.2.1",
     "effect": "4.0.0-beta.102",
     "elysia": "2.0.0-beta.4",
     "express": "^5.2.1",

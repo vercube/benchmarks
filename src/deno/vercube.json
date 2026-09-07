@@ -1,0 +1,7 @@
+{
+	"nodeModulesDir": "manual",
+	"compilerOptions": {
+		"lib": ["deno.ns", "dom", "esnext"],
+		"experimentalDecorators": true
+	}
+}

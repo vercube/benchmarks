@@ -123,6 +123,7 @@ export const discoverFrameworks = () =>
 			(target) =>
 				!blacklists.includes(target as (typeof blacklists)[number])
 		)
+		.filter((target) => !whitelists.length || whitelists.includes(target))
 		.sort()
 
 export const parseFrameworks = (args: string[], available: string[]) => {
@@ -223,8 +224,15 @@ export const ensurePortFree = async () => {
 	}
 }
 
+export const nodeEsm = new Set([
+	'node/effect',
+	'node/rikta/index',
+	'node/tsed/index',
+	'node/vercube'
+])
+
 const builtFile = (target: string) =>
-	`dist/${target}/index.${target === 'node/effect' ? 'mjs' : 'js'}`
+	`dist/${target}/index.${nodeEsm.has(target) ? 'mjs' : 'js'}`
 
 export const startServer = (target: string, quiet = false) => {
 	let [runtime, framework, index] = target.split('/') as [
@@ -242,8 +250,24 @@ export const startServer = (target: string, quiet = false) => {
 			? source
 			: builtFile(target)
 	const startedAt = performance.now()
+	const cmd =
+		target === 'deno/vercube'
+			? [
+					'deno',
+					'run',
+					'--allow-net',
+					'--allow-env',
+					'--allow-read',
+					'--allow-sys',
+					'--unstable-net',
+					'--node-modules-dir=manual',
+					'--config',
+					'src/deno/vercube.json',
+					file
+				]
+			: [...runtimeCommand[runtime], file]
 	const server = Bun.spawn({
-		cmd: [...runtimeCommand[runtime], file],
+		cmd,
 		env: {
 			...Bun.env,
 			NODE_ENV: 'production',

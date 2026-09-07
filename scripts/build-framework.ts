@@ -1,5 +1,6 @@
 import { existsSync } from 'fs'
 import { aot } from 'elysia/plugin/aot/bun'
+import { nodeEsm } from '../bench'
 
 const target = Bun.argv[2]
 if (!target) throw new Error('Usage: bun scripts/build-framework.ts <runtime/framework>')
@@ -20,7 +21,7 @@ if (
 let [runtime, framework, index] = target.split('/')
 if (runtime !== 'bun' && runtime !== 'node')
 	throw new Error(`Bun.build does not support the ${runtime} runtime`)
-const isEffectV4 = target === 'node/effect'
+const isNodeEsm = nodeEsm.has(target)
 const isElysiaAot = framework === 'elysia-aot'
 if (isElysiaAot) framework = 'elysia'
 else if (index) framework += '/index'
@@ -31,14 +32,15 @@ const entry = existsSync(`src/${runtime}/${framework}.ts`)
 const result = await Bun.build({
 	entrypoints: [entry],
 	outdir: `dist/${target}`,
-	naming: isEffectV4 ? 'index.mjs' : 'index.js',
+	naming: isNodeEsm ? 'index.mjs' : 'index.js',
 	target: runtime,
-	format: runtime === 'node' && !isEffectV4 ? 'cjs' : 'esm',
+	format: runtime === 'node' && !isNodeEsm ? 'cjs' : 'esm',
 	minify: true,
 	external: [
 		'@nestjs/microservices',
 		'@nestjs/microservices/*',
 		'@nestjs/websockets/*',
+		'chokidar',
 		'class-transformer',
 		'class-validator',
 		'phc-argon2',

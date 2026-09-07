@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "lib": ["ES2022"],
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}
