@@ -169,7 +169,7 @@ that a run wipes `results/` first, so a partial run leaves a partial table.
 | bun-web-standard    | bun     |  92,440.975 | 127,639.32 | 118,141.66 | 123,229.98 | 752.94 |      1.7 KB |   8.7 ms |      20.8 / 49.5 MB |
 | ultimate-express    | node    |  90,794.573 | 169,157.12 | 101,362.23 |  92,176.46 | 482.48 |    584.4 KB |  66.3 ms |     92.3 / 425.7 MB |
 | deno-web-standard   | deno    |  90,551.533 | 122,651.15 | 109,978.93 |  129,299.9 | 276.15 |         n/a |  14.5 ms |      29.7 / 68.2 MB |
-| vercube             | bun     |  89,256.205 | 127,856.23 | 119,859.25 | 108,729.55 | 579.79 |    561.1 KB |  37.3 ms |      42.2 / 71.0 MB |
+| vercube             | bun     |  89,256.205 | 127,856.23 | 119,859.25 | 108,729.55 | 579.79 |    267.1 KB |  37.3 ms |      42.2 / 71.0 MB |
 | deno                | deno    |  87,003.168 | 118,549.66 | 108,855.85 | 120,276.32 | 330.84 |         n/a |  23.1 ms |      29.8 / 69.9 MB |
 | hono                | deno    |  86,319.098 | 126,475.16 | 106,523.71 | 112,007.64 | 269.88 |         n/a |  57.2 ms |      36.0 / 80.7 MB |
 | hyper-express       | node    |  85,589.608 | 124,977.04 | 115,916.77 | 101,120.08 | 344.54 |    247.9 KB |  56.6 ms |     71.3 / 274.1 MB |
@@ -179,7 +179,7 @@ that a run wipes `results/` first, so a partial run leaves a partial table.
 | h3                  | node    |   69,999.12 |  94,234.27 |  96,782.24 |  88,635.03 | 344.94 |     40.1 KB |  55.5 ms |     73.8 / 339.4 MB |
 | elysia              | node    |   68,779.86 |  99,088.25 |  89,416.19 |  86,351.22 | 263.78 |    196.8 KB |  53.2 ms |     80.8 / 349.9 MB |
 | fastify             | node    |  67,315.845 |  99,689.69 |  98,646.05 |  70,603.51 | 324.13 |    554.8 KB |  79.2 ms |     87.3 / 444.7 MB |
-| vercube             | node    |  67,250.968 | 101,976.51 |  84,831.47 |   81,946.3 | 249.59 |    570.7 KB |  65.4 ms |     97.8 / 377.3 MB |
+| vercube             | node    |  67,250.968 | 101,976.51 |  84,831.47 |   81,946.3 | 249.59 |    279.8 KB |  65.4 ms |     97.8 / 377.3 MB |
 | rikta               | node    |   66,406.84 |  93,318.36 |  87,316.83 |  84,656.41 | 335.76 |    949.9 KB |  96.5 ms |     97.9 / 319.5 MB |
 | hono                | node    |  64,025.588 |  91,660.64 |  83,170.07 |  80,996.07 | 275.57 |     61.2 KB |  51.1 ms |     83.7 / 333.4 MB |
 | elysia-aot          | node    |  62,364.093 |  91,397.22 |  75,492.14 |  82,284.76 | 282.25 |    146.0 KB |  52.0 ms |     80.0 / 356.0 MB |
@@ -196,14 +196,23 @@ that a run wipes `results/` first, so a partial run leaves a partial table.
 
 
 #### Note
-0. The Video column is not stable enough to compare frameworks with. Repeating
+0. Vercube's bundle size is measured with `jiti`, `giget` and `dotenv` marked
+   external, alongside `chokidar`. They are optional peer dependencies of `c12`,
+   which imports them dynamically. A checkout that has them installed, such as
+   this repository or the Vercube monorepo, lets the bundler follow those
+   dynamic imports and adds about 300 KB that `bun add @vercube/core` never
+   installs and a deployment never ships. Measured the other way the number is
+   561 KB instead of 267 KB, which says something about the tree it was built
+   in rather than about the framework. `results/results.md` still carries the
+   uncorrected figure, because it is the untouched output of the run.
+1. The Video column is not stable enough to compare frameworks with. Repeating
    the same target on the same machine moved it between 580 and 742 req/s, about
    13% either way, because it streams a 14.1 MB file over 10 connections and is
    dominated by the file cache and thermal state. The Average column is the mean
    of all four benchmarks, Video included, so it inherits a quarter of that
    noise. Compare Ping, Query and Body.
-1. uws, hyperexpress and ultimate-express bundle size is not accurate because uwebsocket is a native binary that can't be compiled to single bundle, and bundle size is vary based on operating system and CPU architecture
-2. uws is a C++ framework with JavaScript binding
+2. uws, hyperexpress and ultimate-express bundle size is not accurate because uwebsocket is a native binary that can't be compiled to single bundle, and bundle size is vary based on operating system and CPU architecture
+3. uws is a C++ framework with JavaScript binding
 
 See more detail in [results](https://github.com/SaltyAom/bun-http-framework-benchmark/tree/main/results)
 

@@ -43,7 +43,13 @@ const result = await Bun.build({
 		'@nestjs/microservices',
 		'@nestjs/microservices/*',
 		'@nestjs/websockets/*',
+		// Optional peers of c12 that a deployment does not install. Left
+		// resolvable, Bun pulls jiti (183 KB) and giget (108 KB) into the bundle
+		// through c12's dynamic imports, which a real install never does.
 		'chokidar',
+		'dotenv',
+		'giget',
+		'jiti',
 		'class-transformer',
 		'class-validator',
 		'phc-argon2',
