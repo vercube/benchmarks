@@ -37,6 +37,9 @@ const result = await Bun.build({
 	format: runtime === 'node' && !isNodeEsm ? 'cjs' : 'esm',
 	minify: true,
 	external: [
+		// Only required by routing-controllers' Koa driver, which the Express
+		// driver never initialises.
+		'@koa/cors',
 		'@nestjs/microservices',
 		'@nestjs/microservices/*',
 		'@nestjs/websockets/*',
