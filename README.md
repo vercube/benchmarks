@@ -69,6 +69,16 @@ and the official adapter for each runtime.
 
 Elysia AOT variants are included for both Bun and Node.
 
+`vercube-default` is the same application with Vercube's default
+configuration: request logging and the request context stay on, so every
+request writes one JSON log line. `vercube` switches both off
+(`requestLogging: false, requestContext: false`), which is the fastest the
+framework can be configured and what the other targets, none of which log, are
+closest to. The log lines of `vercube-default` go to `/dev/null`, the way a
+production process hands them to a collector rather than to a terminal. Read
+the two rows together: `vercube` is the router and the dispatch, the distance
+to `vercube-default` is the price of a log line per request.
+
 Vercube is included for Bun, Node and Deno from one shared application
 definition in `src/vercube-app.ts`, so the three runtimes differ only in how the
 video file is opened. It is benchmarked at the version in `package.json`, which
@@ -137,19 +147,19 @@ Their shared path list lives in `src/extra-routes.mjs` and every handler returns
 
 ## Test machine specification
 
-One run of `bun benchmark`, all 33 targets, on an otherwise idle machine.
+One run of `bun benchmark`, all 36 targets, on an otherwise idle machine.
 Upstream's own results, measured on upstream's very different machine, are in
 [SaltyAom/bun-http-framework-benchmark](https://github.com/SaltyAom/bun-http-framework-benchmark#results);
 absolute numbers are not comparable between the two, relative ones are.
 
 - Apple M4 Pro (8P + 4E), 48 GB
-- macOS 26.5, arm64
-- Bun 1.4.1-canary.1
-- Node 24.20.0
+- macOS 27.0, arm64
+- Bun 1.4.1
+- Node 26.13.1
 - Deno 2.9.5
-- Vercube `main @ 6611a768`, linked from a local checkout rather than installed
+- Vercube `1.6 @ 0b45dc2f`, linked from a local checkout rather than installed
   from npm, because the changes being measured are not released yet
-- Date: 2026-09-07
+- Date: 2026-11-22
 
 ## Results
 
@@ -158,41 +168,44 @@ These results are measured in req/s. `bun benchmark` writes the same table to
 `results/<runtime>/<framework>.txt`; the table below is copied from there. Note
 that a run wipes `results/` first, so a partial run leaves a partial table.
 
-| Framework           | Runtime | Average     | Ping       | Query      | Body       | Video  | Bundle Size | Startup  | Memory Before/After |
-| ------------------- | ------- | ----------: | ---------: | ---------: | ---------: | -----: | ----------: | -------: | ------------------: |
-| uws                 | node    | 117,329.225 | 169,407.02 | 165,135.71 | 134,390.65 | 383.52 |      3.0 KB |  41.9 ms |     61.9 / 203.8 MB |
-| elysia-aot          | bun     | 103,911.473 | 158,908.67 | 132,465.68 |  123,501.7 | 769.84 |    127.5 KB |  14.4 ms |      27.0 / 52.3 MB |
-| elysia              | bun     | 103,655.695 | 158,497.33 | 132,757.85 | 122,588.49 | 779.11 |    171.4 KB |  15.2 ms |      28.5 / 54.4 MB |
-| h3                  | bun     |  96,616.123 | 139,396.93 | 126,719.88 | 119,644.56 | 703.12 |     22.5 KB |  10.7 ms |      25.0 / 60.8 MB |
-| bun                 | bun     |  95,871.627 | 129,483.25 | 133,985.55 | 119,269.54 | 748.17 |      2.3 KB |   8.8 ms |      20.2 / 51.4 MB |
-| hono                | bun     |   93,312.04 | 138,946.07 | 120,098.43 | 113,533.96 |  669.7 |     20.4 KB |  11.5 ms |      25.3 / 55.6 MB |
-| bun-web-standard    | bun     |  92,440.975 | 127,639.32 | 118,141.66 | 123,229.98 | 752.94 |      1.7 KB |   8.7 ms |      20.8 / 49.5 MB |
-| ultimate-express    | node    |  90,794.573 | 169,157.12 | 101,362.23 |  92,176.46 | 482.48 |    584.4 KB |  66.3 ms |     92.3 / 425.7 MB |
-| deno-web-standard   | deno    |  90,551.533 | 122,651.15 | 109,978.93 |  129,299.9 | 276.15 |         n/a |  14.5 ms |      29.7 / 68.2 MB |
-| vercube             | bun     |  89,256.205 | 127,856.23 | 119,859.25 | 108,729.55 | 579.79 |    267.1 KB |  37.3 ms |      42.2 / 71.0 MB |
-| deno                | deno    |  87,003.168 | 118,549.66 | 108,855.85 | 120,276.32 | 330.84 |         n/a |  23.1 ms |      29.8 / 69.9 MB |
-| hono                | deno    |  86,319.098 | 126,475.16 | 106,523.71 | 112,007.64 | 269.88 |         n/a |  57.2 ms |      36.0 / 80.7 MB |
-| hyper-express       | node    |  85,589.608 | 124,977.04 | 115,916.77 | 101,120.08 | 344.54 |    247.9 KB |  56.6 ms |     71.3 / 274.1 MB |
-| h3                  | deno    |  77,919.528 | 112,639.82 |  94,698.03 |  104,067.4 | 272.86 |         n/a |  28.3 ms |      40.2 / 72.7 MB |
-| effect              | bun     |   74,190.57 |    108,719 |  99,320.61 |  87,987.33 | 735.34 |    260.9 KB |  33.0 ms |      40.1 / 76.0 MB |
-| vercube             | deno    |  73,737.093 | 105,536.04 |  92,968.17 |  96,124.45 | 319.71 |         n/a |  64.1 ms |     47.8 / 165.0 MB |
-| h3                  | node    |   69,999.12 |  94,234.27 |  96,782.24 |  88,635.03 | 344.94 |     40.1 KB |  55.5 ms |     73.8 / 339.4 MB |
-| elysia              | node    |   68,779.86 |  99,088.25 |  89,416.19 |  86,351.22 | 263.78 |    196.8 KB |  53.2 ms |     80.8 / 349.9 MB |
-| fastify             | node    |  67,315.845 |  99,689.69 |  98,646.05 |  70,603.51 | 324.13 |    554.8 KB |  79.2 ms |     87.3 / 444.7 MB |
-| vercube             | node    |  67,250.968 | 101,976.51 |  84,831.47 |   81,946.3 | 249.59 |    279.8 KB |  65.4 ms |     97.8 / 377.3 MB |
-| rikta               | node    |   66,406.84 |  93,318.36 |  87,316.83 |  84,656.41 | 335.76 |    949.9 KB |  96.5 ms |     97.9 / 319.5 MB |
-| hono                | node    |  64,025.588 |  91,660.64 |  83,170.07 |  80,996.07 | 275.57 |     61.2 KB |  51.1 ms |     83.7 / 333.4 MB |
-| elysia-aot          | node    |  62,364.093 |  91,397.22 |  75,492.14 |  82,284.76 | 282.25 |    146.0 KB |  52.0 ms |     80.0 / 356.0 MB |
-| express             | bun     |  49,408.683 |  71,034.84 |  69,509.08 |  56,855.33 | 235.48 |    821.1 KB |  34.7 ms |     49.1 / 201.3 MB |
-| effect              | node    |   46,372.71 |   68,446.7 |   61,926.8 |   54,769.9 | 347.44 |    354.0 KB |  79.0 ms |     83.5 / 438.0 MB |
-| koa                 | node    |  41,086.528 |  58,867.57 |  57,046.12 |  48,106.57 | 325.85 |    728.6 KB |  55.2 ms |     86.8 / 345.4 MB |
-| express             | node    |  31,209.125 |  45,848.64 |  42,440.56 |  36,221.23 | 326.07 |    601.9 KB |  50.5 ms |     78.1 / 323.1 MB |
-| tsed                | node    |  30,769.085 |  49,897.71 |  37,128.33 |  35,727.29 | 323.01 |      1.1 MB |  92.4 ms |    101.8 / 443.3 MB |
-| routing-controllers | node    |  28,527.743 |  41,515.69 |  37,951.53 |   34,315.6 | 328.15 |      1.7 MB | 165.9 ms |    105.8 / 357.0 MB |
-| adonis              | node    |  28,329.082 |  30,433.79 |  38,346.92 |  44,299.06 | 236.56 |      1.2 MB | 199.1 ms |    116.1 / 471.1 MB |
-| nest                | node    |  25,614.535 |  36,309.11 |  33,174.84 |  32,644.11 | 330.08 |      1.3 MB | 103.5 ms |    100.1 / 361.2 MB |
-| oak                 | deno    |  19,530.668 |  31,228.02 |  26,355.26 |  20,321.13 | 218.26 |         n/a | 113.7 ms |     71.6 / 245.3 MB |
-| acorn               | deno    |    9,888.14 |  12,498.38 |   13,264.4 |  13,563.71 | 226.07 |         n/a | 135.8 ms |     79.5 / 424.8 MB |
+| Framework           | Runtime | Average     | Ping       | Query      | Body       | Video     | Bundle Size | Startup  | Memory Before/After |
+| ------------------- | ------- | ----------: | ---------: | ---------: | ---------: | --------: | ----------: | -------: | ------------------: |
+| uws                 | node    | 122,524.535 | 174,755.15 | 171,231.73 | 143,718.37 |    392.89 |      3.0 KB |  37.8 ms |     66.7 / 211.0 MB |
+| elysia              | bun     | 106,506.015 | 161,876.38 | 136,818.02 | 126,642.09 |    687.57 |    171.4 KB |  15.2 ms |      28.3 / 54.8 MB |
+| elysia-aot          | bun     |  106,448.42 | 162,364.22 | 136,642.35 | 126,146.26 |    640.85 |    127.5 KB |  15.0 ms |      27.7 / 53.3 MB |
+| h3                  | bun     |   99,917.42 | 144,318.54 | 130,225.89 | 124,403.75 |     721.5 |     22.6 KB |  11.0 ms |      24.8 / 58.2 MB |
+| bun                 | bun     |  97,727.798 | 132,587.46 | 135,844.44 | 121,835.26 |    644.03 |      2.3 KB |   8.5 ms |      20.7 / 52.7 MB |
+| hono                | bun     |   97,388.47 | 144,933.79 | 125,683.24 | 118,233.12 |    703.73 |     20.4 KB |  11.4 ms |      26.1 / 55.2 MB |
+| vercube             | bun     |  95,730.465 | 136,370.41 | 129,959.59 | 115,865.57 |    726.29 |    352.1 KB |  31.8 ms |      44.3 / 99.4 MB |
+| bun-web-standard    | bun     |  95,478.843 | 132,416.79 | 121,914.77 | 126,899.53 |    684.28 |      1.7 KB |   9.4 ms |      20.7 / 49.0 MB |
+| deno                | deno    |  94,572.348 | 128,118.17 | 119,761.08 | 130,094.41 |    315.73 |         n/a |  22.9 ms |      29.8 / 70.0 MB |
+| ultimate-express    | node    |  94,394.135 |  173,633.2 |  102,410.4 | 101,024.41 |    508.53 |    584.4 KB |  76.2 ms |     91.4 / 316.0 MB |
+| hono                | deno    |  94,074.795 | 139,064.91 | 116,835.89 | 120,073.19 |    325.19 |         n/a |  37.9 ms |      35.8 / 82.1 MB |
+| deno-web-standard   | deno    |  92,700.287 | 125,613.04 | 111,738.86 | 133,132.57 |    316.68 |         n/a |  21.7 ms |      29.9 / 71.2 MB |
+| hyper-express       | node    |  90,589.345 | 131,857.31 |  121,653.6 | 108,465.96 |    380.51 |    247.9 KB | 422.9 ms |     76.1 / 285.8 MB |
+| h3                  | deno    |  82,476.288 | 120,091.31 |  101,949.2 | 107,533.43 |    331.21 |         n/a |  27.0 ms |      40.5 / 72.6 MB |
+| vercube             | deno    |  80,082.125 | 112,635.74 | 107,895.44 |  99,475.24 |    322.08 |         n/a |  46.5 ms |      53.9 / 82.4 MB |
+| fastify             | node    |    79,627.9 | 112,738.03 | 110,575.41 |  94,844.99 |    353.17 |    554.8 KB |  86.2 ms |     89.9 / 261.3 MB |
+| vercube             | node    |  77,020.815 | 107,956.37 |  104,518.5 |  95,316.54 |    291.85 |    365.7 KB |  58.6 ms |     94.8 / 279.6 MB |
+| hono                | node    |  76,486.273 | 110,854.01 | 101,130.54 |  93,667.34 |     293.2 |     61.2 KB |  53.5 ms |     96.8 / 273.8 MB |
+| h3                  | node    |  74,913.785 |  105,427.7 |  101,068.8 |  92,806.73 |    351.91 |     41.5 KB |  45.2 ms |     77.8 / 286.8 MB |
+| elysia-aot          | node    |  74,899.858 | 105,908.32 |   99,386.8 |  93,949.48 |    354.83 |    147.5 KB |  52.1 ms |     82.4 / 253.8 MB |
+| elysia              | node    |  74,250.225 | 104,777.95 |  99,123.16 |  92,746.97 |    352.82 |    198.2 KB |  50.1 ms |     83.5 / 260.0 MB |
+| rikta               | node    |  73,821.198 |  102,305.6 | 102,320.29 |  90,312.68 |    346.22 |    944.1 KB |  90.7 ms |    101.2 / 263.4 MB |
+| effect              | bun     |  71,776.323 | 108,910.89 |  95,522.91 |  82,051.72 |    619.77 |    260.9 KB |  32.5 ms |      40.3 / 76.6 MB |
+| vercube-default     | bun     |  68,211.503 |  93,640.37 |  90,278.83 |  88,232.99 |    693.82 |    352.1 KB |  33.2 ms |     45.8 / 120.3 MB |
+| effect              | node    |  57,484.725 |  88,125.71 |  77,728.58 |  63,730.51 |     354.1 |    354.0 KB |  80.1 ms |     93.3 / 288.8 MB |
+| acorn               | deno    |  47,499.708 |  49,402.86 |   45,294.2 |  66,494.36 | 28,807.41 |         n/a | 258.9 ms |      79.0 / 91.1 MB |
+| express             | bun     |  46,459.873 |  66,564.95 |  64,470.21 |  54,575.47 |    228.86 |    821.1 KB |  38.0 ms |     54.8 / 209.1 MB |
+| koa                 | node    |  46,031.175 |   66,590.9 |   62,414.3 |  54,772.43 |    347.07 |    728.6 KB |  56.7 ms |     92.7 / 270.6 MB |
+| vercube-default     | node    |  45,432.388 |  58,816.26 |  57,119.77 |  65,498.03 |    295.49 |    365.7 KB |  73.5 ms |    107.9 / 300.2 MB |
+| vercube-default     | deno    |  44,505.568 |  59,603.76 |  58,055.99 |  60,047.76 |    314.76 |         n/a |  50.5 ms |     56.1 / 181.6 MB |
+| adonis              | node    |   39,949.59 |  52,640.63 |  49,384.35 |  57,437.87 |    335.51 |      1.2 MB | 316.1 ms |    113.2 / 301.5 MB |
+| express             | node    |  36,283.945 |  50,291.44 |  47,674.54 |  46,819.73 |    350.07 |    601.9 KB |  51.7 ms |     83.3 / 303.0 MB |
+| tsed                | node    |   33,744.69 |  53,582.26 |  39,513.72 |   41,544.4 |    338.38 |      1.1 MB | 101.7 ms |    105.8 / 299.3 MB |
+| routing-controllers | node    |  32,304.743 |  46,567.23 |  41,789.07 |  40,527.47 |     335.2 |      1.7 MB | 172.9 ms |    105.5 / 287.8 MB |
+| nest                | node    |   31,536.91 |  45,157.13 |  41,246.05 |  39,400.15 |    344.31 |      1.3 MB | 105.3 ms |    107.4 / 277.9 MB |
+| oak                 | deno    |  23,898.368 |  34,407.05 |  34,144.06 |  26,811.41 |    230.95 |         n/a |  97.5 ms |     72.1 / 240.5 MB |
 
 
 #### Note
@@ -201,10 +214,10 @@ that a run wipes `results/` first, so a partial run leaves a partial table.
    which imports them dynamically. A checkout that has them installed, such as
    this repository or the Vercube monorepo, lets the bundler follow those
    dynamic imports and adds about 300 KB that `bun add @vercube/core` never
-   installs and a deployment never ships. Measured the other way the number is
-   561 KB instead of 267 KB, which says something about the tree it was built
-   in rather than about the framework. `results/results.md` still carries the
-   uncorrected figure, because it is the untouched output of the run.
+   installs and a deployment never ships. Of the 352 KB that remain, 155 KB
+   are `c12` and what it loads to read a config file (`confbox` alone is
+   105 KB): built with `c12` external, which an application that passes its
+   whole configuration to `createApp` can do, the bundle is 196 KB.
 1. The Video column is not stable enough to compare frameworks with. Repeating
    the same target on the same machine moved it between 580 and 742 req/s, about
    13% either way, because it streams a 14.1 MB file over 10 connections and is
@@ -213,6 +226,7 @@ that a run wipes `results/` first, so a partial run leaves a partial table.
    noise. Compare Ping, Query and Body.
 2. uws, hyperexpress and ultimate-express bundle size is not accurate because uwebsocket is a native binary that can't be compiled to single bundle, and bundle size is vary based on operating system and CPU architecture
 3. uws is a C++ framework with JavaScript binding
+4. acorn's Video figure in this run is not a file transfer rate: nearly all of its responses were errors, see `results/deno/acorn.txt`. It also lifts its Average.
 
 See more detail in [results](https://github.com/SaltyAom/bun-http-framework-benchmark/tree/main/results)
 

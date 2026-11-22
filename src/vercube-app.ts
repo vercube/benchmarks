@@ -18,7 +18,13 @@ export const startVercube = async (
 		QueryParam
 	}: typeof Vercube,
 	runtime: 'bun' | 'node' | 'deno',
-	createVideo: () => Response | Promise<Response>
+	createVideo: () => Response | Promise<Response>,
+	/**
+	 * `bare` switches request logging and the request context off, which is
+	 * the fastest a Vercube app can be configured. `default` leaves both as
+	 * `createApp()` ships them, so every request writes one log line.
+	 */
+	variant: 'bare' | 'default' = 'bare'
 ) => {
 	@Controller('/')
 	class AppController {
@@ -71,8 +77,9 @@ export const startVercube = async (
 			logLevel: 'error',
 			production: true,
 			dev: false,
-			requestLogging: false,
-			requestContext: false,
+			...(variant === 'bare'
+				? { requestLogging: false, requestContext: false }
+				: {}),
 			c12: { dotenv: false },
 			server: {
 				runtime,
