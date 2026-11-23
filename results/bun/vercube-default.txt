@@ -1,0 +1,58 @@
+Bundle: 352.1 KB
+Startup: 33.2 ms
+Memory before: 45.8 MB
+
+bombardier --fasthttp -c 500 -d 10s http://127.0.0.1:3000/
+Bombarding http://127.0.0.1:3000/ for 10s using 500 connection(s)
+ 00m09s 00m08s 00m08s 00m08s 00m08s 00m08s 00m07s 00m07s 00m07s 00m07s 00m07s 00m06s 00m06s 00m06s 00m06s 00m06s 00m05s 00m05s 00m05s 00m05s 00m05s 00m04s 00m04s 00m04s 00m04s 00m04s 00m03s 00m03s 00m03s 00m03s 00m03s 00m02s 00m02s 00m02s 00m02s 00m02s 00m01s 00m01s 00m01s 00m01s 00m01s 10s
+Done!
+Statistics        Avg      Stdev        Max
+  Reqs/sec     93640.37    5999.95  109230.16
+  Latency        5.34ms   224.37us    16.72ms
+  HTTP codes:
+    1xx - 0, 2xx - 936597, 3xx - 0, 4xx - 0, 5xx - 0
+    others - 0
+  Throughput:    16.96MB/s
+
+bombardier --fasthttp -c 500 -d 10s http://127.0.0.1:3000/id/1?name=bun
+Bombarding http://127.0.0.1:3000/id/1?name=bun for 10s using 500 connection(s)
+ 00m09s 00m08s 00m08s 00m08s 00m08s 00m08s 00m07s 00m07s 00m07s 00m07s 00m07s 00m06s 00m06s 00m06s 00m06s 00m06s 00m05s 00m05s 00m05s 00m05s 00m05s 00m04s 00m04s 00m04s 00m04s 00m04s 00m03s 00m03s 00m03s 00m03s 00m03s 00m02s 00m02s 00m02s 00m02s 00m02s 00m01s 00m01s 00m01s 00m01s 00m01s 10s
+Done!
+Statistics        Avg      Stdev        Max
+  Reqs/sec     90278.83    6927.41  109060.89
+  Latency        5.54ms   309.32us    18.92ms
+  HTTP codes:
+    1xx - 0, 2xx - 902999, 3xx - 0, 4xx - 0, 5xx - 0
+    others - 56
+  Errors:
+    dial tcp 127.0.0.1:3000: connect: connection reset by peer - 56
+  Throughput:    17.73MB/s
+
+bombardier --fasthttp -c 500 -d 10s -m POST -H Content-Type:application/json -f ./scripts/body.json http://127.0.0.1:3000/json
+Bombarding http://127.0.0.1:3000/json for 10s using 500 connection(s)
+ 00m09s 00m08s 00m08s 00m08s 00m08s 00m08s 00m07s 00m07s 00m07s 00m07s 00m07s 00m06s 00m06s 00m06s 00m06s 00m06s 00m05s 00m05s 00m05s 00m05s 00m05s 00m04s 00m04s 00m04s 00m04s 00m04s 00m03s 00m03s 00m03s 00m03s 00m03s 00m02s 00m02s 00m02s 00m02s 00m02s 00m01s 00m01s 00m01s 00m01s 00m01s 10s
+Done!
+Statistics        Avg      Stdev        Max
+  Reqs/sec     88232.99    6064.07  102668.78
+  Latency        5.66ms   168.08us    17.67ms
+  HTTP codes:
+    1xx - 0, 2xx - 882642, 3xx - 0, 4xx - 0, 5xx - 0
+    others - 108
+  Errors:
+    dial tcp 127.0.0.1:3000: connect: connection reset by peer - 104
+    the server closed connection before returning the first response byte. Make sure the server returns 'Connection: close' response header before closing the connection - 4
+  Throughput:    22.63MB/s
+
+bombardier --fasthttp -c 10 -d 10s -H Cache-Control:no-store -H If-None-Match:"benchmark-force-full-response" http://127.0.0.1:3000/video
+Bombarding http://127.0.0.1:3000/video for 10s using 10 connection(s)
+ 00m09s 00m08s 00m08s 00m08s 00m08s 00m08s 00m07s 00m07s 00m07s 00m07s 00m07s 00m06s 00m06s 00m06s 00m06s 00m06s 00m05s 00m05s 00m05s 00m05s 00m05s 00m04s 00m04s 00m04s 00m04s 00m04s 00m03s 00m03s 00m03s 00m03s 00m03s 00m02s 00m02s 00m02s 00m02s 00m02s 00m01s 00m01s 00m01s 00m01s 00m01s 10s
+Done!
+Statistics        Avg      Stdev        Max
+  Reqs/sec       693.82     107.78     882.68
+  Latency       14.40ms     2.45ms    52.30ms
+  HTTP codes:
+    1xx - 0, 2xx - 6949, 3xx - 0, 4xx - 0, 5xx - 0
+    others - 0
+  Throughput:     9.14GB/s
+
+Memory after: 120.3 MB

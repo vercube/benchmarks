@@ -228,7 +228,19 @@ export const nodeEsm = new Set([
 	'node/effect',
 	'node/rikta/index',
 	'node/tsed/index',
-	'node/vercube'
+	'node/vercube',
+	'node/vercube-default'
+])
+
+/**
+ * Targets that write a log line per request. Their stdout goes nowhere, the
+ * way a production process hands it to a collector, instead of to the terminal
+ * the benchmark runs in.
+ */
+const logsEveryRequest = new Set([
+	'bun/vercube-default',
+	'node/vercube-default',
+	'deno/vercube-default'
 ])
 
 const builtFile = (target: string) =>
@@ -251,7 +263,7 @@ export const startServer = (target: string, quiet = false) => {
 			: builtFile(target)
 	const startedAt = performance.now()
 	const cmd =
-		target === 'deno/vercube'
+		target === 'deno/vercube' || target === 'deno/vercube-default'
 			? [
 					'deno',
 					'run',
@@ -281,7 +293,7 @@ export const startServer = (target: string, quiet = false) => {
 					}
 				: {})
 		},
-		stdout: quiet ? 'ignore' : 'inherit',
+		stdout: quiet || logsEveryRequest.has(target) ? 'ignore' : 'inherit',
 		stderr: 'inherit'
 	})
 
